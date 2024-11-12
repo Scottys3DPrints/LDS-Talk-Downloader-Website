@@ -20,6 +20,11 @@ BYU_BASE_URL = "https://speeches.byu.edu/speakers/"
 DOWNLOAD_FOLDER = os.path.join(os.path.expanduser("~"), "Downloads")
 speaker_folder = None  # Global variable for the speaker folder
 
+# Define a route for the home page
+@app.route('/')
+def home():
+    return "Welcome to LDS Talks Archive!"
+
 # Function to create a folder for the speaker in the Downloads directory
 def create_speaker_folder(speaker_name):
     global speaker_folder
