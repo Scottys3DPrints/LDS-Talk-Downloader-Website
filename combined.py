@@ -26,7 +26,7 @@ speaker_folder = None  # Global variable for the speaker folder
 # Define a route for the home page
 @app.route('/')
 def home():
-    return send_from_directory('static', 'index.html')
+    return send_from_directory('index.html')
 
 # Function to create a folder for the speaker in the Downloads directory
 def create_speaker_folder(speaker_name):
