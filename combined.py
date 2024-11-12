@@ -29,6 +29,7 @@ speaker_folder = None  # Global variable for the speaker folder
 def home():
     return render_template('index.html')
 
+
 # Function to create a folder for the speaker in the Downloads directory
 def create_speaker_folder(speaker_name):
     global speaker_folder
