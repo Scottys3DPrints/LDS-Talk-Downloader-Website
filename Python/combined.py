@@ -316,4 +316,6 @@ def gc_byu_download():
     })
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # Ensure the app listens on all available network interfaces and the correct port
+    app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+
