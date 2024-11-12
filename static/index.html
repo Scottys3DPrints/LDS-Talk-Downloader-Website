@@ -5,15 +5,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LDS Talks Downloader</title>
-    <link rel="shortcut icon" href="images/moroni-icon1.png" type="image/png">
-    <link rel="stylesheet" href="styles/styles.css">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/moroni-icon1.png') }}" type="image/png">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
     <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
 </head>
 
 <body>
 
     <header>
-        <img src="images/moroni-icon1.png" alt="LDS Talks Archive Icon">
+        <img src="{{ url_for('static', filename='images/moroni-icon1.png') }}" alt="LDS Talks Archive Icon">
         <h1>LDS Talks Archive</h1>
     </header>
 
@@ -88,7 +88,7 @@
         </p>
     </footer>
 
-    <script src="script/script.js"></script>
+    <script src="{{ url_for('static', filename='script/script.js') }}"></script>
 
 </body>
 
