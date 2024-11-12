@@ -1,0 +1,87 @@
+[
+    {
+        "Name": "Joseph Smith Jr.",
+        "dates_apostle": "1830-1844",
+        "dates_prophet": "1830-1844"
+    },
+    {
+        "Name": "Brigham Young",
+        "dates_apostle": "1835-1847",
+        "dates_prophet": "1847-1877"
+    },
+    {
+        "Name": "John Taylor",
+        "dates_apostle": "1838-1880",
+        "dates_prophet": "1880-1887"
+    },
+    {
+        "Name": "Wilford Woodruff",
+        "dates_apostle": "1839-1889",
+        "dates_prophet": "1889-1898"
+    },
+    {
+        "Name": "Lorenzo Snow",
+        "dates_apostle": "1849-1898",
+        "dates_prophet": "1898-1901"
+    },
+    {
+        "Name": "Joseph F. Smith",
+        "dates_apostle": "1867-1901",
+        "dates_prophet": "1901-1918"
+    },
+    {
+        "Name": "George Albert Smith",
+        "dates_apostle": "1868-1945",
+        "dates_prophet": "1945-1951"
+    },
+    {
+        "Name": "Heber J. Grant",
+        "dates_apostle": "1882-1918",
+        "dates_prophet": "1918-1945"
+    },
+    {
+        "Name": "David O. McKay",
+        "dates_apostle": "1906-1951",
+        "dates_prophet": "1951-1970"
+    },
+    {
+        "Name": "Joseph Fielding Smith",
+        "dates_apostle": "1910-1970",
+        "dates_prophet": "1970-1972"
+    },
+    {
+        "Name": "Harold B. Lee",
+        "dates_apostle": "1941-1972",
+        "dates_prophet": "1972-1973"
+    },
+    {
+        "Name": "Spencer W. Kimball",
+        "dates_apostle": "1943-1973",
+        "dates_prophet": "1973-1985"
+    },
+    {
+        "Name": "Ezra Taft Benson",
+        "dates_apostle": "1943-1985",
+        "dates_prophet": "1985-1994"
+    },
+    {
+        "Name": "Howard W. Hunter",
+        "dates_apostle": "1959-1994",
+        "dates_prophet": "1994-1995"
+    },
+    {
+        "Name": "Gordon B. Hinckley",
+        "dates_apostle": "1961-1995",
+        "dates_prophet": "1995-2008"
+    },
+    {
+        "Name": "Thomas S. Monson",
+        "dates_apostle": "1963-2008",
+        "dates_prophet": "2008-2018"
+    },
+    {
+        "Name": "Russell M. Nelson",
+        "dates_apostle": "1984-2018",
+        "dates_prophet": "2018-present"
+    }
+]

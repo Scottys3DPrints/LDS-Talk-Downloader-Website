@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LDS Talks Downloader</title>
+    <link rel="shortcut icon" href="images/moroni-icon1.png" type="image/png">
+    <link rel="stylesheet" href="styles/styles.css">
+    <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet'>
+</head>
+
+<body>
+
+    <header>
+        <img src="images/moroni-icon1.png" alt="LDS Talks Archive Icon">
+        <h1>LDS Talks Archive</h1>
+    </header>
+
+    <main>
+
+
+        <div class="hero">
+            <div class="hero_box">
+                <h2>LDS Talks Archive</h2>
+                <p>Find and download inspiring talks</p>
+            </div>
+        </div>
+
+        <div class="background">
+            <div class="main_container">
+
+                <div class="search-bar">
+                    <input type="text" placeholder="Search for author..." id="search-input">
+                    <button onclick="searchTalks()">Search</button>
+                </div>
+
+                <div class="flex_row sorters">
+                    <button id="current-button">Current</button>
+                    <button id="alphabetical-button">Alphabetical</button>
+                    <button id="popular-button">Prophets</button>
+                </div>
+
+
+
+                <div class="talks-container" id="talks-container">
+
+
+
+                        <div class="talk-card grid_talk_card">
+                            <div class="flex_row">
+                                <img src="" alt="Jeffrey R. Holland"
+                                    class="ga_img">
+                                <div class="flex_column flex_speaker">
+                                    <h3>Speaker</h3>
+                                    <p>Position</p>
+                                </div>
+                            </div>
+                            <div class="flex_column flex_gc_byu">
+                                <h4>General Conference</h4>
+                                <p>Amount</p>
+                            </div>
+                            <div class="flex_column flex_gc_byu">
+                                <h4>BYU</h4>
+                                <p>Amount</p>
+                            </div>
+                            <div class="flex_column flex_download">
+                                <div class="checkbox-container">
+                                    <input type="checkbox" id="gc_download">
+                                    <label for="gc_download">Download General Conference</label>
+                                </div>
+                                <div class="checkbox-container">
+                                    <input type="checkbox" id="byu_download">
+                                    <label for="byu_download">Download BYU</label>
+                                </div>
+                                <button class="download-button">Download</button>
+                            </div>
+                        </div>
+
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2024 LDS Talks Archive. This is not an official website of the Church of Jesus Christ of Latter-Day Saints
+        </p>
+    </footer>
+
+    <script src="script/script.js"></script>
+
+</body>
+
+</html>

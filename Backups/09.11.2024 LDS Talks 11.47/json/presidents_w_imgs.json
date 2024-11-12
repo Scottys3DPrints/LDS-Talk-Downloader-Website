@@ -1,0 +1,104 @@
+[
+    {
+        "name": "Joseph Smith",
+        "dates_apostle": "1830-1844",
+        "dates_prophet": "1830-1844",
+        "image": "https://churchofjesuschrist.org/imgs/cbace218fc690ed250c875ed08a667e006439191/full/640%2C/0/default"
+    },
+    {
+        "name": "Brigham Young",
+        "dates_apostle": "1835-1847",
+        "dates_prophet": "1847-1877",
+        "image": "https://churchofjesuschrist.org/imgs/c5ad66094c574f122610595c368e09bfab5d4a06/full/640%2C/0/default"
+    },
+    {
+        "name": "John Taylor",
+        "dates_apostle": "1838-1880",
+        "dates_prophet": "1880-1887",
+        "image": "https://churchofjesuschrist.org/imgs/df24d8e09721888a1827b680a05d893552ab33ba/full/640%2C/0/default"
+    },
+    {
+        "name": "Wilford Woodruff",
+        "dates_apostle": "1839-1889",
+        "dates_prophet": "1889-1898",
+        "image": "https://churchofjesuschrist.org/imgs/f2e3510c2fc0db6881580899c0af7166c89dd5b9/full/640%2C/0/default"
+    },
+    {
+        "name": "Lorenzo Snow",
+        "dates_apostle": "1849-1898",
+        "dates_prophet": "1898-1901",
+        "image": "https://www.churchofjesuschrist.org/imgs/8eb37587a31d19552143ab2f27ab8f0b1dfb0c8f/full/640%2C/0/default"
+    },
+    {
+        "name": "Joseph F. Smith",
+        "dates_apostle": "1867-1901",
+        "dates_prophet": "1901-1918",
+        "image": "https://churchofjesuschrist.org/imgs/5010fc13ef00286dfddc0f6074f5d353d4218b98/full/640%2C/0/default"
+    },
+    {
+        "name": "George Albert Smith",
+        "dates_apostle": "1868-1945",
+        "dates_prophet": "1945-1951",
+        "image": "https://churchofjesuschrist.org/imgs/28cfe19762fd3c34d8023509f2c44bd1f95bcaac/full/500%2C/0/default"
+    },
+    {
+        "name": "Heber J. Grant",
+        "dates_apostle": "1882-1918",
+        "dates_prophet": "1918-1945",
+        "image": "https://churchofjesuschrist.org/imgs/d9dc4b9a8286f5dfa4f90ac67c758fa7af52ac89/full/640%2C/0/default"
+    },
+    {
+        "name": "David O. McKay",
+        "dates_apostle": "1906-1951",
+        "dates_prophet": "1951-1970",
+        "image": "https://churchofjesuschrist.org/imgs/000c5aa70c814c7cc140e80287712327d97658d4/full/640%2C/0/default"
+    },
+    {
+        "name": "Joseph Fielding Smith",
+        "dates_apostle": "1910-1970",
+        "dates_prophet": "1970-1972",
+        "image": "https://churchofjesuschrist.org/imgs/3723fc0f789e6328ee554a3c4a64c8a4e8fa53b0/full/640%2C/0/default"
+    },
+    {
+        "name": "Harold B. Lee",
+        "dates_apostle": "1941-1972",
+        "dates_prophet": "1972-1973",
+        "image": "https://churchofjesuschrist.org/imgs/be8337093db3bc60cd5b65629f9ae2bd841b0725/full/640%2C/0/default"
+    },
+    {
+        "name": "Spencer W. Kimball",
+        "dates_apostle": "1943-1973",
+        "dates_prophet": "1973-1985",
+        "image": "https://churchofjesuschrist.org/imgs/600fb9b03ab6d335dff340ad1770122cad802df3/full/640%2C/0/default"
+    },
+    {
+        "name": "Ezra Taft Benson",
+        "dates_apostle": "1943-1985",
+        "dates_prophet": "1985-1994",
+        "image": "https://www.churchofjesuschrist.org/imgs/a8a0daf57c187fb40437de5c14cbc3859e59b3b5/full/640%2C/0/default"
+    },
+    {
+        "name": "Howard W. Hunter",
+        "dates_apostle": "1959-1994",
+        "dates_prophet": "1994-1995",
+        "image": "https://churchofjesuschrist.org/imgs/ba85554422902b04f8b5a363d5cbaf7ca08b5fe6/full/640%2C/0/default"
+    },
+    {
+        "name": "Gordon B. Hinckley",
+        "dates_apostle": "1961-1995",
+        "dates_prophet": "1995-2008",
+        "image": "https://www.churchofjesuschrist.org/imgs/95f71b499f6c2d78bf5bbb7a58d77d34995a1faa/full/640%2C/0/default"
+    },
+    {
+        "name": "Thomas S. Monson",
+        "dates_apostle": "1963-2008",
+        "dates_prophet": "2008-2018",
+        "image": "https://churchofjesuschrist.org/imgs/c50757d6d0ee1ee5b99671732feec56cbdbc594c/full/640%2C/0/default"
+    },
+    {
+        "name": "Russell M. Nelson",
+        "dates_apostle": "1984-2018",
+        "dates_prophet": "2018-present",
+        "image": "https://www.churchofjesuschrist.org/imgs/c5095c402a6d565be72ac46ffda6615ffe88ec5f/full/640%2C/0/default"
+    }
+]
