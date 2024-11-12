@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import os
 import time
@@ -11,15 +11,18 @@ from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from flask import send_from_directory
-from flask import Flask, render_template  # import render_template
-
+from flask import render_template
 
 app = Flask(__name__)
 CORS(app)
 
 BASE_URL = "https://www.churchofjesuschrist.org"
 BYU_BASE_URL = "https://speeches.byu.edu/speakers/"
+
+# Set the path to save downloaded audio files
+DOWNLOAD_FOLDER = os.path.join(os.path.expanduser("~"), "Downloads")
+if not os.path.exists(DOWNLOAD_FOLDER):
+    os.makedirs(DOWNLOAD_FOLDER)
 
 speaker_folder = None  # Global variable for the speaker folder
 
@@ -28,14 +31,12 @@ speaker_folder = None  # Global variable for the speaker folder
 def home():
     return render_template('index.html')
 
-
 # Function to create a folder for the speaker in the Downloads directory
 def create_speaker_folder(speaker_name):
     global speaker_folder
-    speaker_folder = os.path.join(os.path.expanduser("~"), "Downloads", speaker_name)
+    speaker_folder = os.path.join(DOWNLOAD_FOLDER, speaker_name)
     if not os.path.exists(speaker_folder):
         os.makedirs(speaker_folder)
-
 
 # Function to download and save audio
 def download_audio(audio_url, filename):
@@ -50,7 +51,6 @@ def download_audio(audio_url, filename):
     except Exception as e:
         print(f"Error downloading audio: {e}")
         return None
-
 
 # Function to extract year and month from the page
 def extract_year_and_month(driver):
@@ -111,11 +111,14 @@ def process_general_conference_talk(driver, talk_url, speaker_name):
             year, month = extract_year_and_month(driver)
             sanitized_talk_title = re.sub(r'[\\/*?:"<>|]', "", talk_title.replace(" ", "_"))
             filename = f"{year}_{month}_{sanitized_talk_title}_{speaker_name}.mp3"
-            download_audio(audio_url, filename)
+            file_path = download_audio(audio_url, filename)
+            return file_path
         else:
             print("Audio link not found.")
+            return None
     except Exception as e:
         print(f"Error occurred while processing talk: {e}")
+        return None
 
 
 # Function to reformat the speaker's name
@@ -134,7 +137,6 @@ def reformat_name(name):
     except Exception as e:
         print(f"[ERROR] Error while reformatting name: {e}")
         return name
-
 
 # Function to extract the year and month from the date span for each BYU talk
 def extract_year_month(date_tag):
@@ -195,18 +197,19 @@ def search_and_download_byu_mp3_files(formatted_name):
 
                             file_name = f"{year}_{month}_BYU_{talk_title}_{formatted_name}.mp3"
                             file_name = re.sub(r'[^\w\s-]', '', file_name) + ".mp3"
-                            download_audio(mp3_link, file_name)
+                            file_path = download_audio(mp3_link, file_name)
 
-                        return f"Downloaded BYU talks for {formatted_name}."
+                        return f"Downloaded BYU talks for {formatted_name}.", file_path
                     else:
                         print(f"[ERROR] Failed to load speaker's page. Status code: {speaker_response.status_code}")
-                        return f"Failed to load speaker's page for {formatted_name}."
+                        return f"Failed to load speaker's page for {formatted_name}.", None
             print("[DEBUG] No match found for the speaker.")
         else:
             print(f"[ERROR] Failed to fetch BYU website. Status code: {response.status_code}")
+            return f"Failed to fetch BYU website.", None
     except Exception as e:
         print(f"[ERROR] Error while searching for speaker and downloading MP3 files: {e}")
-    return f"{formatted_name} not found on BYU website."
+        return f"{formatted_name} not found on BYU website.", None
 
 
 # Route for General Conference downloads
@@ -261,7 +264,6 @@ def gc_download():
     finally:
         driver.quit()
 
-
 # Route for BYU downloads
 @app.route('/byu_download', methods=['POST'])
 def byu_download():
@@ -272,71 +274,30 @@ def byu_download():
 
     create_speaker_folder(name)  # Create the folder once
     formatted_name = reformat_name(name)
-    result = search_and_download_byu_mp3_files(formatted_name)
-    return jsonify({"message": result})
+    result, file_path = search_and_download_byu_mp3_files(formatted_name)
 
+    if file_path:
+        return jsonify({
+            "message": result,
+            "download_link": f"/download_file/{os.path.basename(file_path)}"  # Link to download the file
+        })
+    else:
+        return jsonify({"error": "Failed to download file"}), 500
 
-# Route for both General Conference and BYU downloads
-@app.route('/gc_byu_download', methods=['POST'])
-def gc_byu_download():
-    data = request.get_json()
-    name = data.get('name')
-    if not name:
-        return jsonify({"error": "No name provided"}), 400
-
-    create_speaker_folder(name)  # Create the folder once
-
-    # General Conference download
-    options = Options()
-    options.add_argument("--headless")
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-gpu")
-    options.add_argument("--window-size=1920x1080")
-
-    driver = webdriver.Firefox(options=options)
+# Route to download the file
+@app.route('/download_file/<filename>', methods=['GET'])
+def download_file(filename):
     try:
-        search_url = f"{BASE_URL}/study/general-conference/speakers?lang=eng"
-        response = requests.get(search_url)
-        response.raise_for_status()
-        soup = BeautifulSoup(response.text, 'html.parser')
-        speaker_links = soup.find_all('a', href=True, class_=re.compile(r'sc-omeqik-0'))
-
-        normalized_name = ' '.join(name.split()).lower()
-        profile_url = None
-        for link in speaker_links:
-            h4_tag = link.find('h4', class_=re.compile(r'sc-12mz36o-0'))
-            if h4_tag and h4_tag.text.strip().lower() == normalized_name:
-                profile_url = urljoin(BASE_URL, link['href'])
-                print(f"Speaker profile URL found: {profile_url}")
-                break
-
-        if profile_url:
-            response = requests.get(profile_url)
-            response.raise_for_status()
-            soup = BeautifulSoup(response.text, 'html.parser')
-            talk_links = soup.find_all('a', class_=re.compile(r'sc-omeqik-0'))
-
-            for talk_link in talk_links:
-                talk_url = urljoin(BASE_URL, talk_link['href'])
-                process_general_conference_talk(driver, talk_url, name)
+        file_path = os.path.join(DOWNLOAD_FOLDER, filename)
+        if os.path.exists(file_path):
+            return send_from_directory(directory=DOWNLOAD_FOLDER, filename=filename)
         else:
-            return jsonify({"error": f"Speaker '{name}' not found."}), 404
+            return jsonify({"error": "File not found!"}), 404
     except Exception as e:
+        print(f"Error in download_file: {e}")
         return jsonify({"error": str(e)}), 500
-    finally:
-        driver.quit()
-
-    # BYU download
-    formatted_name = reformat_name(name)
-    byu_result = search_and_download_byu_mp3_files(formatted_name)
-
-    return jsonify({
-        "general_conference_talks": "Downloaded General Conference talks.",
-        "byu_talks": byu_result
-    })
 
 
 if __name__ == "__main__":
     # Ensure the app listens on all available network interfaces and the correct port
     app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
-
