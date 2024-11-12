@@ -67,7 +67,7 @@ function handleDownloadClick(event) {
 
 // Function to load "Current" members from the JSON file
 function loadCurrentMembers() {
-    fetch('json/current_with_byu.json')
+    fetch('/static/json/current_with_byu.json')
         .then(response => response.json())
         .then(data => {
             displayMembers(data, true);
@@ -77,7 +77,7 @@ function loadCurrentMembers() {
 
 // Function to load and sort all General Authorities alphabetically by last name
 function loadAlphabeticalMembers() {
-    fetch('json/___all2_GAs+ap+pr_with_BYU.json')
+    fetch('/static/json/___all2_GAs+ap+pr_with_BYU.json')
         .then(response => response.json())
         .then(data => {
             data.sort((a, b) => {
@@ -92,7 +92,7 @@ function loadAlphabeticalMembers() {
 
 // Function to load and display prophets from the JSON file
 function loadProphets() {
-    fetch('json/presidents_w_imgs.json')
+    fetch('/static/json/presidents_w_imgs.json')
         .then(response => response.json())
         .then(data => {
             displayMembers(data, true);
