@@ -15,13 +15,12 @@ from flask import send_from_directory
 from flask import Flask, render_template  # import render_template
 
 
-
 app = Flask(__name__)
 CORS(app)
 
 BASE_URL = "https://www.churchofjesuschrist.org"
 BYU_BASE_URL = "https://speeches.byu.edu/speakers/"
-DOWNLOAD_FOLDER = os.path.join(os.path.expanduser("~"), "Downloads")
+
 speaker_folder = None  # Global variable for the speaker folder
 
 # Define a route for the home page
@@ -29,12 +28,14 @@ speaker_folder = None  # Global variable for the speaker folder
 def home():
     return render_template('index.html')
 
+
 # Function to create a folder for the speaker in the Downloads directory
 def create_speaker_folder(speaker_name):
     global speaker_folder
-    speaker_folder = os.path.join(DOWNLOAD_FOLDER, speaker_name)
+    speaker_folder = os.path.join(os.path.expanduser("~"), "Downloads", speaker_name)
     if not os.path.exists(speaker_folder):
         os.makedirs(speaker_folder)
+
 
 # Function to download and save audio
 def download_audio(audio_url, filename):
@@ -45,8 +46,11 @@ def download_audio(audio_url, filename):
         with open(file_path, "wb") as file:
             file.write(response.content)
         print(f"Downloaded and saved: {file_path}")
+        return file_path  # Return the file path to serve it later
     except Exception as e:
         print(f"Error downloading audio: {e}")
+        return None
+
 
 # Function to extract year and month from the page
 def extract_year_and_month(driver):
@@ -67,6 +71,7 @@ def extract_year_and_month(driver):
     except Exception as e:
         print(f"Error extracting year and month: {e}")
         return "Unknown_Year", "Unknown_Month"
+
 
 # Function to process each General Conference talk
 def process_general_conference_talk(driver, talk_url, speaker_name):
@@ -112,6 +117,7 @@ def process_general_conference_talk(driver, talk_url, speaker_name):
     except Exception as e:
         print(f"Error occurred while processing talk: {e}")
 
+
 # Function to reformat the speaker's name
 def reformat_name(name):
     try:
@@ -129,6 +135,7 @@ def reformat_name(name):
         print(f"[ERROR] Error while reformatting name: {e}")
         return name
 
+
 # Function to extract the year and month from the date span for each BYU talk
 def extract_year_month(date_tag):
     date_text = date_tag.get_text(strip=True)
@@ -143,6 +150,7 @@ def extract_year_month(date_tag):
         month = month_map.get(month_str, 'unknown')
         return year, month
     return 'unknown', 'unknown'
+
 
 # Function to search for the speaker on the BYU website and download MP3 files
 def search_and_download_byu_mp3_files(formatted_name):
@@ -200,6 +208,7 @@ def search_and_download_byu_mp3_files(formatted_name):
         print(f"[ERROR] Error while searching for speaker and downloading MP3 files: {e}")
     return f"{formatted_name} not found on BYU website."
 
+
 # Route for General Conference downloads
 @app.route('/gc_download', methods=['POST'])
 def gc_download():
@@ -252,6 +261,7 @@ def gc_download():
     finally:
         driver.quit()
 
+
 # Route for BYU downloads
 @app.route('/byu_download', methods=['POST'])
 def byu_download():
@@ -264,6 +274,7 @@ def byu_download():
     formatted_name = reformat_name(name)
     result = search_and_download_byu_mp3_files(formatted_name)
     return jsonify({"message": result})
+
 
 # Route for both General Conference and BYU downloads
 @app.route('/gc_byu_download', methods=['POST'])
@@ -323,6 +334,7 @@ def gc_byu_download():
         "general_conference_talks": "Downloaded General Conference talks.",
         "byu_talks": byu_result
     })
+
 
 if __name__ == "__main__":
     # Ensure the app listens on all available network interfaces and the correct port
