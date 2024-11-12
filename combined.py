@@ -12,6 +12,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from flask import send_from_directory
+from flask import Flask, render_template  # import render_template
 
 
 
@@ -26,7 +27,7 @@ speaker_folder = None  # Global variable for the speaker folder
 # Define a route for the home page
 @app.route('/')
 def home():
-    return send_from_directory('index.html')
+    return render_template('index.html')
 
 # Function to create a folder for the speaker in the Downloads directory
 def create_speaker_folder(speaker_name):
