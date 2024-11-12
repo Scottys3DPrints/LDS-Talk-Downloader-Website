@@ -22,11 +22,11 @@ function handleDownloadClick(event) {
 
     // Determine which script to run based on the checkboxes
     if (gcDownload && byuDownload) {
-        scriptPath = "http://127.0.0.1:5000/gc_byu_download"; // Your Flask endpoint for GC+BYU downloads
+        scriptPath = "https://lds-talk-archive.onrender.com/gc_byu_download"; // Update for production URL
     } else if (gcDownload) {
-        scriptPath = "http://127.0.0.1:5000/gc_download"; // Your Flask endpoint for GC downloads
+        scriptPath = "https://lds-talk-archive.onrender.com/gc_download"; // Update for production URL
     } else if (byuDownload) {
-        scriptPath = "http://127.0.0.1:5000/byu_download"; // Your Flask endpoint for BYU downloads
+        scriptPath = "https://lds-talk-archive.onrender.com/byu_download"; // Update for production URL
     } else {
         console.log("No download option selected.");
         return;
@@ -55,19 +55,9 @@ function handleDownloadClick(event) {
     .catch(error => console.error('Error:', error));
 }
 
-
-
-
-
-
-
-
-
-
-
 // Function to load "Current" members from the JSON file
 function loadCurrentMembers() {
-    fetch('/static/json/current_with_byu.json')
+    fetch('/static/json/current_with_byu.json')  // Ensure this path is correct
         .then(response => response.json())
         .then(data => {
             displayMembers(data, true);
@@ -77,7 +67,7 @@ function loadCurrentMembers() {
 
 // Function to load and sort all General Authorities alphabetically by last name
 function loadAlphabeticalMembers() {
-    fetch('/static/json/___all2_GAs+ap+pr_with_BYU.json')
+    fetch('/static/json/___all2_GAs+ap+pr_with_BYU.json')  // Ensure this path is correct
         .then(response => response.json())
         .then(data => {
             data.sort((a, b) => {
@@ -92,7 +82,7 @@ function loadAlphabeticalMembers() {
 
 // Function to load and display prophets from the JSON file
 function loadProphets() {
-    fetch('/static/json/presidents_w_imgs.json')
+    fetch('/static/json/presidents_w_imgs.json')  // Ensure this path is correct
         .then(response => response.json())
         .then(data => {
             displayMembers(data, true);
@@ -192,7 +182,7 @@ document.addEventListener('DOMContentLoaded', loadCurrentMembers);
 
 // Test Button for Simple Debugging
 document.getElementById('test-button').addEventListener('click', () => {
-    fetch('http://127.0.0.1:5000/download', {
+    fetch('https://lds-talk-archive.onrender.com/download', { // Update to production URL
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
