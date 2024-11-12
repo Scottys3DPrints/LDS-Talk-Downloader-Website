@@ -11,6 +11,9 @@ from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from flask import send_from_directory
+
+
 
 app = Flask(__name__)
 CORS(app)
@@ -23,7 +26,7 @@ speaker_folder = None  # Global variable for the speaker folder
 # Define a route for the home page
 @app.route('/')
 def home():
-    return "Welcome to LDS Talks Archive!"
+    return send_from_directory('static', 'index.html')
 
 # Function to create a folder for the speaker in the Downloads directory
 def create_speaker_folder(speaker_name):
