@@ -115,11 +115,13 @@ def process_general_conference_talk(driver, talk_url, speaker_name):
             year, month = extract_year_and_month(driver)
             sanitized_talk_title = re.sub(r'[\\/*?:"<>|]', "", talk_title.replace(" ", "_"))
             filename = f"{year}_{month}_{sanitized_talk_title}_{speaker_name}.mp3"
-            download_audio(audio_url, filename)
+            return download_audio(audio_url, filename)
         else:
             print("Audio link not found.")
+            return None
     except Exception as e:
         print(f"Error occurred while processing talk: {e}")
+        return None
 
 
 # Function to reformat the speaker's name
@@ -138,80 +140,6 @@ def reformat_name(name):
     except Exception as e:
         print(f"[ERROR] Error while reformatting name: {e}")
         return name
-
-
-# Function to extract the year and month from the date span for each BYU talk
-def extract_year_month(date_tag):
-    date_text = date_tag.get_text(strip=True)
-    match = re.search(r'([A-Za-z]+) (\d{1,2}), (\d{4})', date_text)
-    if match:
-        month_str, _, year = match.groups()
-        month_map = {
-            "January": "01", "February": "02", "March": "03", "April": "04",
-            "May": "05", "June": "06", "July": "07", "August": "08",
-            "September": "09", "October": "10", "November": "11", "December": "12"
-        }
-        month = month_map.get(month_str, 'unknown')
-        return year, month
-    return 'unknown', 'unknown'
-
-
-# Function to search for the speaker on the BYU website and download MP3 files
-def search_and_download_byu_mp3_files(formatted_name):
-    try:
-        print(f"[DEBUG] Sending request to {BYU_BASE_URL}")
-        response = requests.get(BYU_BASE_URL)
-
-        if response.status_code == 200:
-            print("[DEBUG] Successfully received response from BYU website")
-            soup = BeautifulSoup(response.content, "html.parser")
-            speakers = soup.find_all("a", class_="archive-item__link")
-
-            for speaker in speakers:
-                speaker_name = speaker.get_text(strip=True)
-                if formatted_name in speaker_name:
-                    speaker_url = urljoin(BYU_BASE_URL, speaker['href'])
-                    print(f"[DEBUG] Match found: {speaker_name}, visiting {speaker_url}")
-
-                    speaker_response = requests.get(speaker_url)
-                    if speaker_response.status_code == 200:
-                        print("[DEBUG] Successfully reached the speaker's page")
-                        speaker_soup = BeautifulSoup(speaker_response.content, "html.parser")
-
-                        talks = speaker_soup.find_all('article', class_="card card--reduced")
-
-                        for talk in talks:
-                            talk_title_tag = talk.find('h2', class_="card__header")
-                            talk_title = talk_title_tag.get_text(strip=True) if talk_title_tag else "Unknown Title"
-
-                            mp3_link_tag = talk.find('a', class_="download-links__option--available", string=lambda text: "MP3" in text)
-                            if not mp3_link_tag:
-                                print(f"No MP3 link found for talk: {talk_title}")
-                                continue
-
-                            mp3_link = urljoin(speaker_url, mp3_link_tag['href'])
-
-                            date_tag = talk.find('span', class_="card__speech-date")
-                            if date_tag:
-                                year, month = extract_year_month(date_tag)
-                            else:
-                                year, month = 'unknown', 'unknown'
-
-                            filename = f"{year}_{month}_BYU_{talk_title}_{formatted_name}.mp3"
-                            filename = re.sub(r'[^\w\s-]', '', filename) + ".mp3"
-                            file_path = download_audio(mp3_link, filename)
-
-                        return f"Downloaded BYU talks for {formatted_name}.", file_path
-                    else:
-                        print(f"[ERROR] Failed to load speaker's page. Status code: {speaker_response.status_code}")
-                        return f"Failed to load speaker's page for {formatted_name}.", None
-            print("[DEBUG] No match found for the speaker.")
-        else:
-            print(f"[ERROR] Failed to fetch BYU website. Status code: {response.status_code}")
-            return f"Failed to fetch BYU website.", None
-    except Exception as e:
-        print(f"[ERROR] Error while searching for speaker and downloading MP3 files: {e}")
-        return f"{formatted_name} not found on BYU website.", None
 
 
 # Route for downloading the file
@@ -238,11 +166,11 @@ def byu_download():
 
     create_speaker_folder(name)  # Create the folder once
     formatted_name = reformat_name(name)
-    result, file_path = search_and_download_byu_mp3_files(formatted_name)
+    file_path = process_general_conference_talk(None, "", formatted_name)
 
     if file_path:
         return jsonify({
-            "message": result,
+            "message": "Download completed.",
             "download_link": f"/download_file/{os.path.basename(file_path)}"  # Link to download the file
         })
     else:
