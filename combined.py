@@ -122,71 +122,110 @@ def process_general_conference_talk(driver, talk_url, speaker_name):
         print(f"Error occurred while processing talk: {e}")
 
 
-# Route to download the file from the server
+# Function to reformat the speaker's name
+def reformat_name(name):
+    try:
+        parts = name.split()
+        if len(parts) > 1:
+            last_name = parts[-1]
+            rest_of_name = " ".join(parts[:-1])
+            formatted_name = f"{last_name}, {rest_of_name}"
+            print(f"[DEBUG] Reformatted name: {formatted_name}")
+            return formatted_name
+        else:
+            print("[DEBUG] Name has only one part, no reformatting needed.")
+            return name
+    except Exception as e:
+        print(f"[ERROR] Error while reformatting name: {e}")
+        return name
+
+
+# Function to extract the year and month from the date span for each BYU talk
+def extract_year_month(date_tag):
+    date_text = date_tag.get_text(strip=True)
+    match = re.search(r'([A-Za-z]+) (\d{1,2}), (\d{4})', date_text)
+    if match:
+        month_str, _, year = match.groups()
+        month_map = {
+            "January": "01", "February": "02", "March": "03", "April": "04",
+            "May": "05", "June": "06", "July": "07", "August": "08",
+            "September": "09", "October": "10", "November": "11", "December": "12"
+        }
+        month = month_map.get(month_str, 'unknown')
+        return year, month
+    return 'unknown', 'unknown'
+
+
+# Function to search for the speaker on the BYU website and download MP3 files
+def search_and_download_byu_mp3_files(formatted_name):
+    try:
+        print(f"[DEBUG] Sending request to {BYU_BASE_URL}")
+        response = requests.get(BYU_BASE_URL)
+
+        if response.status_code == 200:
+            print("[DEBUG] Successfully received response from BYU website")
+            soup = BeautifulSoup(response.content, "html.parser")
+            speakers = soup.find_all("a", class_="archive-item__link")
+
+            for speaker in speakers:
+                speaker_name = speaker.get_text(strip=True)
+                if formatted_name in speaker_name:
+                    speaker_url = urljoin(BYU_BASE_URL, speaker['href'])
+                    print(f"[DEBUG] Match found: {speaker_name}, visiting {speaker_url}")
+
+                    speaker_response = requests.get(speaker_url)
+                    if speaker_response.status_code == 200:
+                        print("[DEBUG] Successfully reached the speaker's page")
+                        speaker_soup = BeautifulSoup(speaker_response.content, "html.parser")
+
+                        talks = speaker_soup.find_all('article', class_="card card--reduced")
+
+                        for talk in talks:
+                            talk_title_tag = talk.find('h2', class_="card__header")
+                            talk_title = talk_title_tag.get_text(strip=True) if talk_title_tag else "Unknown Title"
+
+                            mp3_link_tag = talk.find('a', class_="download-links__option--available", string=lambda text: "MP3" in text)
+                            if not mp3_link_tag:
+                                print(f"No MP3 link found for talk: {talk_title}")
+                                continue
+
+                            mp3_link = urljoin(speaker_url, mp3_link_tag['href'])
+
+                            date_tag = talk.find('span', class_="card__speech-date")
+                            if date_tag:
+                                year, month = extract_year_month(date_tag)
+                            else:
+                                year, month = 'unknown', 'unknown'
+
+                            filename = f"{year}_{month}_BYU_{talk_title}_{formatted_name}.mp3"
+                            filename = re.sub(r'[^\w\s-]', '', filename) + ".mp3"
+                            file_path = download_audio(mp3_link, filename)
+
+                        return f"Downloaded BYU talks for {formatted_name}.", file_path
+                    else:
+                        print(f"[ERROR] Failed to load speaker's page. Status code: {speaker_response.status_code}")
+                        return f"Failed to load speaker's page for {formatted_name}.", None
+            print("[DEBUG] No match found for the speaker.")
+        else:
+            print(f"[ERROR] Failed to fetch BYU website. Status code: {response.status_code}")
+            return f"Failed to fetch BYU website.", None
+    except Exception as e:
+        print(f"[ERROR] Error while searching for speaker and downloading MP3 files: {e}")
+        return f"{formatted_name} not found on BYU website.", None
+
+
+# Route for downloading the file
 @app.route('/download_file/<filename>', methods=['GET'])
 def download_file(filename):
     try:
-        file_path = os.path.join(speaker_folder, filename)
+        file_path = os.path.join(DOWNLOAD_FOLDER, filename)
         if os.path.exists(file_path):
-            return send_from_directory(directory=speaker_folder, filename=filename)
+            return send_from_directory(directory=DOWNLOAD_FOLDER, filename=filename)
         else:
             return jsonify({"error": "File not found!"}), 404
     except Exception as e:
         print(f"Error in download_file: {e}")
         return jsonify({"error": str(e)}), 500
-
-
-# Route for General Conference downloads
-@app.route('/gc_download', methods=['POST'])
-def gc_download():
-    data = request.get_json()
-    name = data.get('name')
-    if not name:
-        return jsonify({"error": "No name provided"}), 400
-
-    create_speaker_folder(name)  # Create the folder once
-
-    # Set up Firefox options for headless mode
-    options = Options()
-    options.add_argument("--headless")
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-gpu")
-    options.add_argument("--window-size=1920x1080")
-
-    driver = webdriver.Firefox(options=options)
-    try:
-        search_url = f"{BASE_URL}/study/general-conference/speakers?lang=eng"
-        response = requests.get(search_url)
-        response.raise_for_status()
-        soup = BeautifulSoup(response.text, 'html.parser')
-        speaker_links = soup.find_all('a', href=True, class_=re.compile(r'sc-omeqik-0'))
-
-        normalized_name = ' '.join(name.split()).lower()
-        profile_url = None
-        for link in speaker_links:
-            h4_tag = link.find('h4', class_=re.compile(r'sc-12mz36o-0'))
-            if h4_tag and h4_tag.text.strip().lower() == normalized_name:
-                profile_url = urljoin(BASE_URL, link['href'])
-                print(f"Speaker profile URL found: {profile_url}")
-                break
-
-        if profile_url:
-            response = requests.get(profile_url)
-            response.raise_for_status()
-            soup = BeautifulSoup(response.text, 'html.parser')
-            talk_links = soup.find_all('a', class_=re.compile(r'sc-omeqik-0'))
-
-            for talk_link in talk_links:
-                talk_url = urljoin(BASE_URL, talk_link['href'])
-                process_general_conference_talk(driver, talk_url, name)
-        else:
-            return jsonify({"error": f"Speaker '{name}' not found."}), 404
-
-        return jsonify({"message": "General Conference talks downloaded."})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-    finally:
-        driver.quit()
 
 
 # Route for BYU downloads
@@ -199,13 +238,15 @@ def byu_download():
 
     create_speaker_folder(name)  # Create the folder once
     formatted_name = reformat_name(name)
-    result = search_and_download_byu_mp3_files(formatted_name)
+    result, file_path = search_and_download_byu_mp3_files(formatted_name)
 
-    # Return the name of the file to be downloaded
-    return jsonify({
-        "message": result,
-        "download_link": f"/download_file/{filename}"  # Link to download the file
-    })
+    if file_path:
+        return jsonify({
+            "message": result,
+            "download_link": f"/download_file/{os.path.basename(file_path)}"  # Link to download the file
+        })
+    else:
+        return jsonify({"error": "Failed to download file"}), 500
 
 
 if __name__ == "__main__":
